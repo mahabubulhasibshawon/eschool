@@ -18,12 +18,12 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux, manager *middlewares.Manage
 			http.HandlerFunc(h.CreateCourse),
 		),
 	)
-// 	mux.Handle(
-// 		"GET /courses/{id}",
-// 		manager.With(
-// 			http.HandlerFunc(h.GetCourse),
-// 		),
-// 	)
+	mux.Handle(
+		"GET /courses/{id}",
+		manager.With(
+			http.HandlerFunc(h.GetCourse),
+		),
+	)
 // 	mux.Handle(
 // 		"DELETE /courses/{id}",
 // 		manager.With(

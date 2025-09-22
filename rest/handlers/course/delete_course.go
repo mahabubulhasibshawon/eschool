@@ -1,23 +1,41 @@
 package course
 
-// import (
-// 	"eschool/util"
-// 	"eschool/database"
+import (
+	"eschool/util"
 
-// 	"net/http"
-// 	"strconv"
-// )
+	"net/http"
+	"strconv"
+)
 
-// func (h *Handler) DeleteCourse(w http.ResponseWriter, r *http.Request) {
-// 	courseId := r.PathValue("id")
+func (h *Handler) DeleteCourse(w http.ResponseWriter, r *http.Request) {
+	courseId := r.PathValue("id")
 
-// 	cId, err := strconv.Atoi(courseId)
-// 	if err != nil {
-// 		http.Error(w, "Please give me valid product id", 400)
-// 		return
-// 	}
+	cId, err := strconv.Atoi(courseId)
+	if err != nil {
+		http.Error(w, "Please give me valid course id", 400)
+		return
+	}
 
-// 	database.DeleteCourse(cId)
+	query := `DELETE FROM courses WHERE id = $1`
+	res, err := h.middlewares.DB.Exec(query, cId)
+	if err != nil {
+		http.Error(w, "Failed to delete course"+err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-// 	util.SendData(w, "Successfully deleted product!", 201)
-// }
+	// Check if any row was affected
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		http.Error(w, "Could not verify deletion: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if rowsAffected == 0 {
+		http.Error(w, "No course found with this ID", http.StatusNotFound)
+		return
+	}
+
+	util.SendData(w, map[string]any{
+		"message": "Course deleted successfully",
+		"id":      cId,
+	}, http.StatusOK)
+}
