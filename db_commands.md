@@ -1,75 +1,143 @@
-postgres=# create database eschool;
-CREATE DATABASE
-postgres=# psql -U postgres -d eschool 
-postgres-# ;
-ERROR:  syntax error at or near "psql"
-LINE 1: psql -U postgres -d eschool
-        ^
-postgres=# psql -U postgres
-postgres-# \l
-postgres-# psql -U postgres -d eschool
-postgres-# ;
-ERROR:  syntax error at or near "psql"
-LINE 1: psql -U postgres
-        ^
-postgres=# psql -U postgres -d eschool;
-ERROR:  syntax error at or near "psql"
-LINE 1: psql -U postgres -d eschool;
-        ^
-postgres=# /q
-postgres-# exit
-Use \q to quit.
-postgres-# \q
-postgres@TN-AIO-0080:~$ psql -U postgres -d eschool;
-psql (16.10 (Ubuntu 16.10-0ubuntu0.24.04.1))
-Type "help" for help.
 
-eschool=# CREATE TABLE courses (
+# 📚 eSchool PostgreSQL Database Setup
+
+This document outlines the steps taken to create and configure a PostgreSQL database for an e-learning platform named **eSchool**. The setup includes database creation, table creation, schema modifications, and basic queries.
+
+---
+
+## 🛠️ 1. Create the Database
+
+```sql
+-- Log into PostgreSQL and create a new database named "eschool"
+CREATE DATABASE eschool;
+````
+
+---
+
+## 🔁 2. Connect to the Database
+
+> 💡 Note: The following was incorrectly attempted inside the PostgreSQL shell.
+> Commands like `psql -U postgres -d eschool` must be run **from the terminal**, not within `psql`.
+
+Incorrect attempts inside `psql` shell:
+
+```sql
+psql -U postgres -d eschool;
+```
+
+✅ Correct way to connect **from the terminal (bash)**:
+
+```bash
+psql -U postgres -d eschool
+```
+
+---
+
+## 📋 3. Create the `courses` Table
+
+```sql
+CREATE TABLE courses (
     id SERIAL PRIMARY KEY,
     title TEXT NOT NULL,
     instructor TEXT NOT NULL,
     description TEXT,
     category TEXT,
-    price NUMERIC(10,2),          -- stores values like 79.99
-    duration VARCHAR(50),         -- "10h" fits fine
-    level VARCHAR(50),            -- e.g. Beginner, Intermediate
-    lessons INT,                  -- number of lessons
-    thumbnail TEXT,               -- URL to image
-    tags TEXT[]                   -- PostgreSQL array for tags like {"golang","backend","basics"}
+    price NUMERIC(10,2),       -- e.g., 79.99
+    duration VARCHAR(50),      -- e.g., "10h"
+    level VARCHAR(50),         -- e.g., Beginner, Intermediate
+    lessons INT,               -- Number of lessons
+    thumbnail TEXT,            -- URL to thumbnail image
+    tags TEXT[]                -- Array of tags: {"golang", "backend", "basics"}
 );
-CREATE TABLE
-eschool=# select * from courses
-eschool-# ;
- id | title | instructor | description | category | price | duration | level | lessons | thumbnail | tags 
-----+-------+------------+-------------+----------+-------+----------+-------+---------+-----------+------
-(0 rows)
+```
 
-eschool=# \d
-               List of relations
- Schema |      Name      |   Type   |  Owner   
---------+----------------+----------+----------
- public | courses        | table    | postgres
- public | courses_id_seq | sequence | postgres
-(2 rows)
+---
 
-eschool=# ALTER TABLE courses
+## 🔍 4. Check if Table Exists and View It
+
+List all tables:
+
+```sql
+\dt
+```
+
+Check table structure:
+
+```sql
+\d
+```
+
+Select all rows from the `courses` table (currently empty):
+
+```sql
+SELECT * FROM courses;
+```
+
+---
+
+## 🔧 5. Alter the Table: Remove Unneeded Columns
+
+In this step, several columns were dropped from the `courses` table for simplification:
+
+```sql
+ALTER TABLE courses
 DROP COLUMN price,
 DROP COLUMN duration,
 DROP COLUMN level,
 DROP COLUMN lessons,
 DROP COLUMN thumbnail,
 DROP COLUMN tags;
-ALTER TABLE
-eschool=# \dt
-          List of relations
- Schema |  Name   | Type  |  Owner   
---------+---------+-------+----------
- public | courses | table | postgres
-(1 row)
+```
 
-eschool=# select * from courses;
+---
+
+## ✅ 6. Final Table Structure
+
+Check updated structure:
+
+```sql
+\dt
+\d courses
+```
+
+Resulting columns:
+
+* `id` (serial, primary key)
+* `title` (text, not null)
+* `instructor` (text, not null)
+* `description` (text)
+* `category` (text)
+
+---
+
+## 🔍 7. Query Final Table
+
+```sql
+SELECT * FROM courses;
+```
+
+Output:
+
+```
  id | title | instructor | description | category 
 ----+-------+------------+-------------+----------
 (0 rows)
+```
 
-eschool=# 
+---
+
+## 📌 Notes
+
+* Always exit the PostgreSQL shell using `\q`, not commands like `exit` or `/q`.
+* Use proper CLI for `psql` commands, and SQL syntax **only inside the `psql` shell**.
+
+---
+
+## 🚀 Next Steps
+
+* Insert sample data into the `courses` table.
+* Create additional tables like `students`, `enrollments`, etc.
+* Define relationships between tables (e.g., `foreign keys`).
+* Implement data validation or constraints as needed.
+
+```
