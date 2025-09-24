@@ -1,31 +1,13 @@
 package database
 
+import "time"
 
-
+// Course struct (updated)
 type Course struct {
-	ID          int      `db:"id" json:"id"`
-	Title       string   `db:"title" json:"title"`
-	Instructor  string   `db:"instructor" json:"instructor"`
-	Description string   `db:"description" json:"description"`
-	Category    string   `db:"category" json:"category"`
+	ID           int       `db:"id" json:"id"`
+	Title        string    `db:"title" json:"title"`
+	InstructorID int       `db:"instructor_id" json:"instructor_id"`
+	Description  string    `db:"description" json:"description"`
+	Category     string    `db:"category" json:"category"`
+	CreatedAt    time.Time `db:"created_at" json:"created_at"`
 }
-
-// StoreCourse inserts a new course into the DB
-// func StoreCourse(db *sqlx.DB, c Course) (Course, error) {
-// 	query := `
-//         INSERT INTO courses
-//         (title, instructor, description, category, price, duration, level, lessons, thumbnail, tags)
-//         VALUES
-//         (:title, :instructor, :description, :category, :price, :duration, :level, :lessons, :thumbnail, :tags)
-//         RETURNING id
-//     `
-
-// 	// NamedQuery binds struct fields to query params
-// 	var id int
-// 	err := db.QueryRowx(query, c).Scan(&id)
-// 	if err != nil {
-// 		return Course{}, err
-// 	}
-// 	c.ID = id
-// 	return c, nil
-// }

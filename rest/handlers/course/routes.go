@@ -16,6 +16,7 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux, manager *middlewares.Manage
 		"POST /courses",
 		manager.With(
 			http.HandlerFunc(h.CreateCourse),
+			h.middlewares.AuthenticateJWT,
 		),
 	)
 	mux.Handle(
@@ -24,10 +25,18 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux, manager *middlewares.Manage
 			http.HandlerFunc(h.GetCourse),
 		),
 	)
-// 	mux.Handle(
-// 		"DELETE /courses/{id}",
-// 		manager.With(
-// 			http.HandlerFunc(h.DeleteCourse),
-// 		),
-// 	)
+	mux.Handle(
+		"PUT /courses/{id}",
+		manager.With(
+			http.HandlerFunc(h.UpdateCourse),
+			h.middlewares.AuthenticateJWT,
+		),
+	)
+	mux.Handle(
+		"DELETE /courses/{id}",
+		manager.With(
+			http.HandlerFunc(h.DeleteCourse),
+			h.middlewares.AuthenticateJWT,
+		),
+	)
 }
