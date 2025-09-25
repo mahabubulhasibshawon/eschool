@@ -4,6 +4,7 @@ import (
 	"eschool/config"
 	"eschool/rest"
 	"eschool/rest/handlers/course"
+	"eschool/rest/handlers/otp"
 	"eschool/rest/handlers/user"
 	"eschool/rest/middlewares"
 	"fmt"
@@ -35,12 +36,14 @@ func Serve() {
 
 	middlewares := middlewares.NewMiddlewares(cnf, DB)
 	courseHandler := course.NewHandler(middlewares)
-	userHandler := user.NewHandler(middlewares)
+	otpHandler := otp.NewHandler(middlewares, cnf.RedisAddr, cnf.RedisUsrName, cnf.RedisPassword,cnf.SmtpHost, cnf.SmtpPort, cnf.SmtpUsrName, cnf.SmtpPassword, cnf.SenderEmail, cnf.RedisDB)
+	userHandler := user.NewHandler(middlewares, otpHandler)
 
 	server := rest.NewServer(
 		cnf,
 		courseHandler,
 		userHandler,
+		otpHandler,
 	)
 	server.Start()
 }

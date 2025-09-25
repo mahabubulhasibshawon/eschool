@@ -16,6 +16,15 @@ type Config struct {
 	HttpPort      int
 	JwtSecretKey  string
 	JwtRefreshKey string
+	RedisAddr     string
+	RedisUsrName  string
+	RedisPassword string
+	RedisDB       int
+	SmtpHost      string
+	SmtpPort      string
+	SmtpUsrName   string
+	SmtpPassword  string
+	SenderEmail   string
 }
 
 func loadConfig() {
@@ -54,6 +63,56 @@ func loadConfig() {
 		fmt.Println("Jwt refresh key is required!")
 		os.Exit(1)
 	}
+	redisAddr := os.Getenv("REDIS_ADDR")
+	if redisAddr == "" {
+		fmt.Println("Redis Address is required!")
+		os.Exit(1)
+	}
+	redisUsrName := os.Getenv("REDIS_USERNAME")
+	if redisUsrName == "" {
+		fmt.Println("Redis username is required!")
+		os.Exit(1)
+	}
+	redisPassword := os.Getenv("REDIS_PASSWORD")
+	if redisPassword == "" {
+		fmt.Println("REDIS PASSWORD is required!")
+		os.Exit(1)
+	}
+	redis_db := os.Getenv("REDIS_DB")
+	if redis_db == "" {
+		fmt.Println("redis db is required!")
+		os.Exit(1)
+	}
+	db_port, err := strconv.ParseInt(redis_db, 10, 64)
+	if err != nil {
+		fmt.Println("Port must be number")
+		os.Exit(1)
+	}
+	smtpHost := os.Getenv("SMTP_HOST")
+	if serviceName == "" {
+		fmt.Println("SMTP_HOST is required!")
+		os.Exit(1)
+	}
+	smtpPort := os.Getenv("SMTP_PORT")
+	if httpPort == "" {
+		fmt.Println("SMTP_PORT is required!")
+		os.Exit(1)
+	}
+	smtpUsername := os.Getenv("SMTP_USERNAME")
+	if jwtSecretKey == "" {
+		fmt.Println("SMTP_USERNAME is required!")
+		os.Exit(1)
+	}
+	smtpPassword := os.Getenv("SMTP_PASSWORD")
+	if jwtRefreshKey == "" {
+		fmt.Println("SMTP_PASSWORD is required!")
+		os.Exit(1)
+	}
+	senderEmail := os.Getenv("SENDER_EMAIL")
+	if redisAddr == "" {
+		fmt.Println("SENDER_EMAIL is required!")
+		os.Exit(1)
+	}
 
 	configurations = &Config{
 		Version:       version,
@@ -61,6 +120,15 @@ func loadConfig() {
 		HttpPort:      int(port),
 		JwtSecretKey:  jwtSecretKey,
 		JwtRefreshKey: jwtRefreshKey,
+		RedisAddr:     redisAddr,
+		RedisUsrName:  redisUsrName,
+		RedisPassword: redisPassword,
+		RedisDB:       int(db_port),
+		SmtpHost:      smtpHost,
+		SmtpPort:      smtpPort,
+		SmtpUsrName:   smtpUsername,
+		SmtpPassword:  smtpPassword,
+		SenderEmail:   senderEmail,
 	}
 }
 func GetConfig() *Config {

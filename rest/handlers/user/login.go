@@ -12,12 +12,13 @@ import (
 	"net/http"
 	"time"
 
-	"golang.org/x/crypto/bcrypt"
+	// "golang.org/x/crypto/bcrypt"
 )
 
 type RequestLogin struct {
 	Username string `json:"username"`
-	Password string `json:"password"`
+	// Password string `json:"password"`
+	OTP      string `json:"otp"`
 }
 
 // Claims matches AuthenticateJWT middleware
@@ -25,6 +26,8 @@ type Claims struct {
 	UserID    int   `json:"user_id"`
 	ExpiresAt int64 `json:"exp"`
 }
+
+
 
 // GetUserByUsername fetches user by username
 func (h *Handler) GetUserByUsername(username string) (database.User, error) {
@@ -44,7 +47,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate input
-	if requestLogin.Username == "" || requestLogin.Password == "" {
+	if requestLogin.Username == "" || requestLogin.OTP == "" {
 		http.Error(w, "Missing required fields", http.StatusBadRequest)
 		return
 	}
@@ -57,12 +60,20 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Verify password
-	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(requestLogin.Password)); err != nil {
-		log.Println(err)
+	// Verify OTP
+	valid, err := h.otpHandler.VerifyOTP(requestLogin.Username, requestLogin.OTP)
+	if err != nil || !valid {
+		log.Println("Invalid OTP or expired")
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
+
+	// Verify password
+	// if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(requestLogin.Password)); err != nil {
+	// 	log.Println(err)
+	// 	http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+	// 	return
+	// }
 
 	// Generate JWT
 	cnf := config.GetConfig()
